@@ -5,7 +5,7 @@ def call(modules) {
     if (params.APP == "Automatic") {
     	echo "Detecting changes is in automatic mode!"
         currentBuild.description = "Automatic Mode"
-        List<String> funkotronModuleWhitelist = ${modules}
+        List<String> funkotronModuleWhitelist = "${modules}"
         List<String> allChanges = []
         currentBuild.changeSets.each { cs ->
             cs.getItems().each { item ->
