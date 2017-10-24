@@ -4,7 +4,35 @@ def call(modules) {
     sh "touch $outfile"
     if (params.APP == "Automatic") {
     	echo "Detecting changes is in automatic mode!"
-    	currentBuild.description = "Automatic Mode"
+        currentBuild.description = "Automatic Mode"
+        List<String> funkotronModuleWhitelist = ${modules}
+        List<String> allChanges = []
+        currentBuild.changeSets.each { cs ->
+            cs.getItems().each { item ->
+                item.getAffectedFiles().each { f ->
+                    String change = f.path.split('/')[0]
+                    echo "Change: $change"
+                    allChanges << change
+                }
+            }
+        }
+
+        def whitelistedChanges = allChanges
+            .unique()
+            .findAll { funkotronModuleWhitelist.contains(it) }
+
+        if (whitelistedChanges.isEmpty()) {
+            echo "Will build all modules because no module was changed."
+            funkotronModuleWhitelist.each { module ->
+                sh "echo $module >> $outfile"
+            }
+        } else {
+            whitelistedChanges
+                .each {
+                sh "echo $it >> $outfile"
+                echo "Found changes for module: $it"
+            }
+        }
     } else {
 		echo "Detecting changes is disabled because an APP was provided as parameter."
         String input = params.APP
