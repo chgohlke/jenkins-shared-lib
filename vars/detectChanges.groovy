@@ -1,11 +1,11 @@
-def call(modules) {
+def call(availableModules) {
 	def outfile = "ci_module_storage.txt"
     sh "find . -name $outfile -exec rm '{}' +"
     sh "touch $outfile"
     if (params.APP == "Automatic") {
     	echo "Detecting changes is in automatic mode!"
         currentBuild.description = "Automatic Mode"
-        List<String> funkotronModuleWhitelist = "${modules}"
+        //List<String> availableModules = "${modules}"
         List<String> allChanges = []
         currentBuild.changeSets.each { cs ->
             cs.getItems().each { item ->
@@ -19,11 +19,11 @@ def call(modules) {
 
         def whitelistedChanges = allChanges
             .unique()
-            .findAll { funkotronModuleWhitelist.contains(it) }
+            .findAll { availableModules.contains(it) }
 
         if (whitelistedChanges.isEmpty()) {
             echo "Will build all modules because no module was changed."
-            funkotronModuleWhitelist.each { module ->
+            availableModules.each { module ->
                 sh "echo $module >> $outfile"
             }
         } else {
