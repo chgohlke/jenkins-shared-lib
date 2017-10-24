@@ -5,7 +5,6 @@ def call(availableModules) {
     if (params.APP == "Automatic") {
     	echo "Detecting changes is in automatic mode!"
         currentBuild.description = "Automatic Mode"
-        //List<String> availableModules = "${modules}"
         List<String> allChanges = []
         currentBuild.changeSets.each { cs ->
             cs.getItems().each { item ->
